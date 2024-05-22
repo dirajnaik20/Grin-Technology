@@ -23,6 +23,7 @@ class UserAdapter(private val users: MutableList<User>) : RecyclerView.Adapter<U
 
     @SuppressLint("NotifyDataSetChanged")
     fun addUsers(newUsers: List<User>) {
+        users.clear()
         users.addAll(newUsers)
         notifyDataSetChanged()
     }
