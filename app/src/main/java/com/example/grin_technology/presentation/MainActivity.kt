@@ -1,10 +1,9 @@
+
 package com.example.grin_technology.presentation
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grin_technology.databinding.ActivityMainBinding
@@ -17,16 +16,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     @Inject
     lateinit var viewModel: UserViewModel
-    private val userAdapter = UserAdapter()
-    private lateinit var context: Context
-
+    private val userAdapter = UserAdapter(mutableListOf())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        context=this
 
         setupRecyclerView()
         setupObservers()
@@ -41,9 +36,9 @@ class MainActivity : AppCompatActivity() {
                     super.onScrolled(recyclerView, dx, dy)
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val visibleItemCount = layoutManager.childCount
-                    Log.d("Diraj","VisibleItemCount: $visibleItemCount")
+                    Log.d("Diraj","$visibleItemCount")
                     val totalItemCount = layoutManager.itemCount
-                    Log.d("Diraj","TotalItemCount: $totalItemCount")
+                    Log.d("Diraj","$totalItemCount")
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                     if (!viewModel.isLoading.value!! && firstVisibleItemPosition + visibleItemCount >= totalItemCount) {
                         viewModel.loadNextPage()
