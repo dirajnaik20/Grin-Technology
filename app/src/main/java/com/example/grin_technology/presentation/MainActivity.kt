@@ -3,6 +3,7 @@ package com.example.grin_technology.presentation
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +27,9 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         setupObservers()
         setupSwipeToRefresh()
+
+        binding.progressBar.visibility = View.VISIBLE
+        binding.swipeRefreshLayout.visibility = View.GONE
     }
     private fun setupRecyclerView() {
         binding.recyclerView.apply {
@@ -36,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                     super.onScrolled(recyclerView, dx, dy)
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val visibleItemCount = layoutManager.childCount
-                    Log.d("Diraj","$visibleItemCount")
+                    Log.d("Diraj","visibleItemCount: $visibleItemCount")
                     val totalItemCount = layoutManager.itemCount
                     Log.d("Diraj","$totalItemCount")
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
@@ -51,9 +55,22 @@ class MainActivity : AppCompatActivity() {
     private fun setupObservers() {
         viewModel.users.observe(this) { users ->
             userAdapter.addUsers(users)
+
+            if (users.isNotEmpty()) {
+                // Hide the ProgressBar and show the RecyclerView once data is loaded
+                binding.progressBar.visibility = View.GONE
+                binding.swipeRefreshLayout.visibility = View.VISIBLE
+            }
         }
 
         viewModel.isLoading.observe(this) { isLoading ->
+            if (isLoading) {
+                binding.progressBar.visibility = View.VISIBLE
+                binding.swipeRefreshLayout.visibility = View.GONE
+            } else {
+                binding.progressBar.visibility = View.GONE
+                binding.swipeRefreshLayout.visibility = View.VISIBLE
+            }
             binding.swipeRefreshLayout.isRefreshing = isLoading
         }
     }
@@ -61,7 +78,17 @@ class MainActivity : AppCompatActivity() {
     private fun setupSwipeToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             userAdapter.addUsers(emptyList()) // Clear the list
-            viewModel.loadNextPage() // Reload the first page
+            viewModel.loadNextPage()
         }
     }
+
+//    private fun progressBar(){
+//        if (viewModel.isLoading.value==true){
+//            binding.progressBar.visibility = View.VISIBLE
+//        }
+//        else if(viewModel.isLoading.value==false){
+//            binding.progressBar.visibility = View.INVISIBLE
+//        }
+//    }
+
 }
